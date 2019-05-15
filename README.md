@@ -1,14 +1,14 @@
-# Uruchomienie
+# 1. Uruchomienie
 
 Aby uruchomić projekt należy poprawnie skonfigurować proces uruchamiania. W folderze doc znajdują się zrzuty ekranu zawierającą przykładową poprawną konfigurację.
 
-## Main
+## 1.1. Main
 <img src="/doc/configuration_1.PNG" height="200">
 
-## Arguments
+## 1.2. Arguments
 <img src="/doc/configuration_2.PNG" height="200">
 
-# Zasada działania:
+# 2. Zasada działania:
 
 1. Jako pierwszy zostaje uruchomiony agent Simulation odpowiadający za start symulacji komunikacji agentów. Do jego zadania należy uruchomienie pozostałych agentów.
 2. Następnie zostają uruchomieni agenci IMAgent, którzy nasłuchują wiadomości.
