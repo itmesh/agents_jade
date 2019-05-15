@@ -4,6 +4,7 @@ Aby uruchomić projekt należy poprawnie skonfigurować proces uruchamiania. W f
 
 ## Main
 <img src="/doc/configuration_1.PNG" height="200">
+
 ## Arguments
 <img src="/doc/configuration_2.PNG" height="200">
 
