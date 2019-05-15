@@ -1,0 +1,107 @@
+
+ Wiadomoœæ dla agenta IM_AGENT_0 od IM_MASTER_AGENT_0
+	Czeœæ, co tam u Ciebie?
+
+
+ Wiadomoœæ dla agenta IM_MASTER_AGENT_0 od IM_AGENT_0
+	Wszystko w porz¹dku
+
+
+ Wiadomoœæ dla agenta IM_AGENT_0 od IM_MASTER_AGENT_0
+	Super, trzymaj siê agencie numer 0
+
+
+ Wiadomoœæ dla agenta IM_AGENT_2 od IM_MASTER_AGENT_0
+	Czeœæ, co tam u Ciebie?
+
+
+ Wiadomoœæ dla agenta IM_MASTER_AGENT_0 od IM_AGENT_2
+	Wszystko w porz¹dku
+
+
+ Wiadomoœæ dla agenta IM_AGENT_2 od IM_MASTER_AGENT_0
+	Super, trzymaj siê agencie numer 2
+
+
+ Wiadomoœæ dla agenta IM_AGENT_1 od IM_MASTER_AGENT_0
+	Czeœæ, co tam u Ciebie?
+
+
+ Wiadomoœæ dla agenta IM_MASTER_AGENT_0 od IM_AGENT_1
+	Wszystko w porz¹dku
+
+
+ Wiadomoœæ dla agenta IM_AGENT_1 od IM_MASTER_AGENT_0
+	Super, trzymaj siê agencie numer 1
+
+
+ Wiadomoœæ dla agenta IM_AGENT_4 od IM_MASTER_AGENT_0
+	Czeœæ, co tam u Ciebie?
+
+
+ Wiadomoœæ dla agenta IM_MASTER_AGENT_0 od IM_AGENT_4
+	Wszystko w porz¹dku
+
+
+ Wiadomoœæ dla agenta IM_AGENT_4 od IM_MASTER_AGENT_0
+	Super, trzymaj siê agencie numer 4
+
+
+ Wiadomoœæ dla agenta IM_AGENT_3 od IM_MASTER_AGENT_0
+	Czeœæ, co tam u Ciebie?
+
+
+ Wiadomoœæ dla agenta IM_MASTER_AGENT_0 od IM_AGENT_3
+	Wszystko w porz¹dku
+
+
+ Wiadomoœæ dla agenta IM_AGENT_3 od IM_MASTER_AGENT_0
+	Super, trzymaj siê agencie numer 3
+
+
+ Wiadomoœæ dla agenta IM_AGENT_0 od IM_MASTER_AGENT_0
+	Czeœæ, co tam u Ciebie?
+
+
+ Wiadomoœæ dla agenta IM_MASTER_AGENT_0 od IM_AGENT_0
+	Wszystko w porz¹dku
+
+
+ Wiadomoœæ dla agenta IM_AGENT_0 od IM_MASTER_AGENT_0
+	Super, trzymaj siê agencie numer 0
+
+
+ Wiadomoœæ dla agenta IM_AGENT_2 od IM_MASTER_AGENT_0
+	Czeœæ, co tam u Ciebie?
+
+
+ Wiadomoœæ dla agenta IM_MASTER_AGENT_0 od IM_AGENT_2
+	Wszystko w porz¹dku
+
+
+ Wiadomoœæ dla agenta IM_AGENT_2 od IM_MASTER_AGENT_0
+	Super, trzymaj siê agencie numer 2
+
+
+ Wiadomoœæ dla agenta IM_AGENT_1 od IM_MASTER_AGENT_0
+	Czeœæ, co tam u Ciebie?
+
+
+ Wiadomoœæ dla agenta IM_MASTER_AGENT_0 od IM_AGENT_1
+	Wszystko w porz¹dku
+
+
+ Wiadomoœæ dla agenta IM_AGENT_1 od IM_MASTER_AGENT_0
+	Super, trzymaj siê agencie numer 1
+
+
+ Wiadomoœæ dla agenta IM_AGENT_4 od IM_MASTER_AGENT_0
+	Czeœæ, co tam u Ciebie?
+
+
+ Wiadomoœæ dla agenta IM_MASTER_AGENT_0 od IM_AGENT_4
+	Wszystko w porz¹dku
+
+
+ Wiadomoœæ dla agenta IM_AGENT_4 od IM_MASTER_AGENT_0
+	Super, trzymaj siê agencie numer 4
