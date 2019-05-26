@@ -12,18 +12,17 @@ public class Simulation extends Agent {
 	@Override
 	protected void setup() {
 		super.setup();
+		RingControler.init();
 		AgentContainer container = getContainerController();
 		try {
 			for (int i = 0; i < IM_AGENT_COUNT; i++) {
-				AgentController imAgent = container.createNewAgent(IMAgent.PREFIX_AGENT + i, "agents_jade.IMAgent",
-						null);
+				AgentController imAgent = container.createNewAgent(IMAgent.PREFIX_AGENT + (i + 1),
+						"agents_jade.IMAgent", null);
 				imAgent.start();
 			}
-			AgentController imMasterAgent = container.createNewAgent(IMMasterAgent.PREFIX_AGENT + 0,
-					"agents_jade.IMMasterAgent", null);
-			imMasterAgent.start();
 		} catch (StaleProxyException e) {
 			e.printStackTrace();
 		}
 	}
+
 }

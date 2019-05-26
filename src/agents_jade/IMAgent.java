@@ -1,5 +1,9 @@
 package agents_jade;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.DFService;
@@ -13,30 +17,31 @@ import jade.lang.acl.UnreadableException;
 public class IMAgent extends Agent {
 
 	public static final String PREFIX_AGENT = "IM_AGENT_";
-	private static final String REPLY_MESSAGE = "Wszystko w porz¹dku";
+	public static final String OPEN_MESSAGE = "Wysy³am wiadomoœæ";
+	// private static final String REPLY_MESSAGE = "Otrzymana";
+	DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+
+	public IMAgent messageReceiver;
+	public boolean requestTokenFlag = false;
+	private OnNext onNext;
 
 	@Override
 	protected void setup() {
 		super.setup();
-		register();
-		addBehaviour(new ResponseSender());
+		addBehaviour(new Receiver());
+		RingControler.instance.addAgent(this);
 	}
 
-	class ResponseSender extends CyclicBehaviour {
+	class Receiver extends CyclicBehaviour {
 
 		@Override
 		public void action() {
 			ACLMessage msg = receive();
 			if (msg != null) {
-				if (msg.getSender().getLocalName().contains(IMMasterAgent.PREFIX_AGENT)) {
-					System.out.println("\n Wiadomoœæ dla agenta " + myAgent.getLocalName() + " od "
-							+ msg.getSender().getLocalName() + "\n\t" + msg.getContent() + "\n");
-					if (msg.getPerformative() == ACLMessage.REQUEST) {
-						ACLMessage reply = msg.createReply();
-						reply.setPerformative(ACLMessage.INFORM);
-						reply.setContent(REPLY_MESSAGE);
-						send(reply);
-					}
+				if (msg.getSender().getLocalName().contains(PREFIX_AGENT)) {
+					System.out.println("\n Time: " + dateFormat.format(new Date()) + "  From: "
+							+ msg.getSender().getLocalName() + "  To: " + myAgent.getLocalName() + "  length: "
+							+ msg.getContent().length() + "\n");
 				}
 			}
 
@@ -44,28 +49,46 @@ public class IMAgent extends Agent {
 		}
 	}
 
-	public static DFAgentDescription[] getDFAgents(Agent agent) throws FIPAException {
-		DFAgentDescription dfd = new DFAgentDescription();
-		ServiceDescription sd = new ServiceDescription();
-		sd.setType(PREFIX_AGENT);
-		dfd.addServices(sd);
-
-		DFAgentDescription[] result = DFService.search(agent, dfd);
-
-		return result;
+	@Override
+	public void doDelete() {
+		super.doDelete();
+		RingControler.instance.deleteAgent(this);
+		if(requestTokenFlag) {
+			requestTokenFlag = false;
+			onNext.onNext();
+		}
 	}
 
-	private void register() {
-		DFAgentDescription dfd = new DFAgentDescription();
-		dfd.setName(getAID());
-		ServiceDescription sd = new ServiceDescription();
-		sd.setName(getLocalName());
-		sd.setType(PREFIX_AGENT);
-		dfd.addServices(sd);
-		try {
-			DFService.register(this, dfd);
-		} catch (FIPAException e) {
-			e.printStackTrace();
+	public void queueMessageToAgent(IMAgent agent, OnNext onNext) {
+		messageReceiver = agent;
+		this.onNext = onNext;
+		requestTokenFlag = true;
+	}
+
+	@Override
+	public void doActivate() {
+		super.doActivate();
+		RingControler.instance.addAgent(this);
+	}
+	
+	@Override
+	public void doSuspend() {
+		super.doSuspend();
+		RingControler.instance.deleteAgent(this);
+		if(requestTokenFlag) {
+			requestTokenFlag = false;
+			onNext.onNext();
+		}
+	}
+	
+	public void exec() {
+		if (requestTokenFlag) {
+			ACLMessage wiadomosc = new ACLMessage(ACLMessage.REQUEST);
+			wiadomosc.addReceiver(messageReceiver.getAID());
+			wiadomosc.setContent(OPEN_MESSAGE);
+			send(wiadomosc);
+			requestTokenFlag = false;
+			onNext.onNext();
 		}
 	}
 }
