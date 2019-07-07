@@ -6,7 +6,7 @@ import java.util.List;
 public class RingControler {
 
 	public static RingControler instance;
-	public List<IMAgent> IMAgentList;
+	public List<DeviceAgent> IMAgentList;
 
 	public static void init() {
 		instance = new RingControler();
@@ -14,7 +14,7 @@ public class RingControler {
 		new RingSimulation().start();
 	};
 
-	synchronized public void addAgent(IMAgent agent) {
+	synchronized public void addAgent(DeviceAgent agent) {
 		/*
 		 * if (instance.IMAgentList.size() > 0) { IMAgent firstAgent =
 		 * instance.IMAgentList.get(0); IMAgent lastAgent =
@@ -25,7 +25,7 @@ public class RingControler {
 		instance.IMAgentList.add(agent);
 	}
 
-	public void deleteAgent(IMAgent imAgent) {
+	public void deleteAgent(DeviceAgent imAgent) {
 		// TODO Auto-generated method stub
 		instance.IMAgentList.remove(imAgent);
 	}
@@ -40,7 +40,7 @@ class RingSimulation extends Thread {
 	public RingSimulation() {
 		// TODO Auto-generated constructor stub
 	}
-
+/*
 	@Override
 	public void run() {
 		super.run();
@@ -89,4 +89,5 @@ class RingSimulation extends Thread {
 					}
 				});
 	}
+	*/
 }
