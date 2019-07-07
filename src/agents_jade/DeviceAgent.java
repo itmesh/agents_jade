@@ -72,6 +72,10 @@ public class DeviceAgent extends Agent {
 		public void action() {
 			ACLMessage msg = receive();
 			if (msg != null) {
+				System.out.println(
+						"\n Time: " + DATE_FORMAT.format(new Date()) + "  From: " + msg.getSender().getLocalName()
+								+ "  To: " + myAgent.getLocalName() + "  length: " + msg.getContent().length() + "\n");
+
 				if (msg.getContent().contains(MessageTypeSygnature.MSGTASK)) {
 					messageTask = new MessageTask(msg.getContent());
 				} else if (msg.getContent().contains(MessageTypeSygnature.TOKEN)) {
@@ -82,9 +86,7 @@ public class DeviceAgent extends Agent {
 					System.out.println("Setting new nextUID: " + nextUID);
 					nextAgentUID = nextUID;
 				}
-				System.out.println(
-						"\n Time: " + DATE_FORMAT.format(new Date()) + "  From: " + msg.getSender().getLocalName()
-								+ "  To: " + myAgent.getLocalName() + "  length: " + msg.getContent().length() + "\n");
+
 			}
 			/*
 			 * if (msg.getSender().getLocalName().contains(PREFIX_AGENT)) {
@@ -225,11 +227,14 @@ public class DeviceAgent extends Agent {
 			System.out.println(result);
 			for (int i = 0; i < result.length; i++) {
 				if (extractPriority(result[i].getName().getLocalName()) <= agentPriority) {
+
 					ACLMessage message = new ACLMessage(ACLMessage.INFORM);
-					message.addReceiver(result[i].getName());
 					message.setContent(MessageTypeSygnature.NEXTUID + getLocalName());
+					message.addReceiver(result[i].getName());
 					send(message);
-					if (i + 1 < result.length) {
+					if (i == 0) {
+						nextAgentUID = result[result.length - 1].getName().getLocalName();
+					} else if (i - 1 < result.length) {
 						nextAgentUID = result[i + 1].getName().getLocalName();
 					} else {
 						nextAgentUID = result[0].getName().getLocalName();
