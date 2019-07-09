@@ -21,19 +21,15 @@ import jade.lang.acl.UnreadableException;
 /*
  * Name pattern Agent 
  * 
- * DEVICENAME_#UID_1_#P_1
+ * AGENT_1_#P1 - taki musi byæ format abym móg³ mieæ dostêp do id agenta oraz jego priorytetu w nazwie
  * 
- * [DEVICENAME] device name, it can be any name
- * [#UID_n] unique ID of agent, important in communication, UID can be integer or String
- * 
+ * #P1 - priority 1
  */
 
 public class DeviceAgent extends Agent {
 
 	private static final String AGENT_PREFIX = "AGENT_";
-	private static final String PREFIX_UID = "#UID";
 	private static final String PREFIX_PRIORITY = "#P";
-	private static final String SENDING_MESSAGE_LOG = "Wysy³am wiadomoœæ do agenta: ";
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss");
 	private static final String SD_TYPE = "DeviceAgent";
 
@@ -43,24 +39,30 @@ public class DeviceAgent extends Agent {
 	private int agentPriority;
 
 	private boolean hasTokenFlag;
+	//nastêpny agent w ringu
 	private String nextAgentUID;
+	//task który mo¿e zostaæ przypisany do agenta w celu jego wykonania,
+	//taskiem jest wys³anie wiadomoœci do innego agenta
 	private MessageTask messageTask = null;
 
 	@Override
 	protected void setup() {
 		super.setup();
+		//rejestracja odbioru wiadomoœci
 		addBehaviour(new Receiver());
+		//rejestracja taska odpowiadaj¹cego za sprawdzenie 
+		//czy agent posiada tokena, czy ma task do wykonania i za przekazanie tokena dalej
 		addBehaviour(new TokenProvider(this, TOKEN_CHECK_PERIOD));
-
-		// if (getArguments().length > 0)
-		// agentPriority = Integer.valueOf((String) getArguments()[0]);
-
+		
+		//ustawianie ID agenta czyli ca³a jego nazwa
 		agentUID = getLocalName();
+		//pobranie priorytetu z nazwy
 		agentPriority = extractPriority();
 
 		System.out.println("Agent UID: " + agentUID);
 		System.out.println("Agent priority: " + agentPriority);
 		try {
+			//rejestracja agenta w ringu
 			registerAgentInRing();
 		} catch (FIPAException e) {
 			e.printStackTrace();
@@ -77,23 +79,23 @@ public class DeviceAgent extends Agent {
 								+ "  To: " + myAgent.getLocalName() + "  length: " + msg.getContent().length() + "\n");
 
 				if (msg.getContent().contains(MessageTypeSygnature.MSGTASK)) {
+					//tworzenie taska aby w momencie tokena wys³aæ wiadomoœæ do jakiegoœ agenta
+					//dane taska s¹ wysy³ane z poziomu GUI jade 
+					//przyklad wiadomoœæ do zdefiniowania taska (wys³anie wiadomoœci do agenta AGENT_1_#P1)
+					//				#MSGTASK wiadomoœæ #UID AGENT_1_#P1
 					messageTask = new MessageTask(msg.getContent());
 				} else if (msg.getContent().contains(MessageTypeSygnature.TOKEN)) {
-					System.out.println("---------------------------Agent " + getLocalName() + " has token");
+					// wiadomoœæ ¿e agent posiada token
+					System.out.println("-------------------------------------------------Agent " + getLocalName() + " has token");
 					hasTokenFlag = true;
 				} else if (msg.getContent().contains(MessageTypeSygnature.NEXTUID)) {
+					//wiadomoœæ o aktualizacji nastêpnika w ringu
 					String nextUID = msg.getContent().substring(MessageTypeSygnature.NEXTUID.length());
 					System.out.println("Setting new nextUID: " + nextUID);
 					nextAgentUID = nextUID;
 				}
 
 			}
-			/*
-			 * if (msg.getSender().getLocalName().contains(PREFIX_AGENT)) {
-			 * System.out.println("\n Time: " + dateFormat.format(new Date()) + "  From: " +
-			 * msg.getSender().getLocalName() + "  To: " + myAgent.getLocalName() +
-			 * "  length: " + msg.getContent().length() + "\n"); }
-			 */
 			block();
 		}
 
@@ -107,6 +109,8 @@ public class DeviceAgent extends Agent {
 
 		@Override
 		protected void onTick() {
+			//sprawdza czy ma token, jak tak to sprawdz czy jest task do wykonania, je¿eli tak wykonaj go,
+			//nastêpnie przeka¿ token dalej
 			if (hasTokenFlag) {
 				if (messageTask != null)
 					executeMessageTask();
@@ -160,20 +164,24 @@ public class DeviceAgent extends Agent {
 		return extractPriority(getLocalName());
 	}
 
+	//wykonanie zdefiniowanego taska
 	private void executeMessageTask() {
 		System.out.println("Sending message to agent: " + messageTask.receiverUID);
-		System.out.println("\t\tmessage: " + messageTask.message);
+		System.out.println("\t\tmessage: " + messageTask.message + "\n");
 		try {
 			ACLMessage message = new ACLMessage(ACLMessage.INFORM);
 			message.addReceiver(new AID(messageTask.receiverUID, AID.ISLOCALNAME));
 			message.setContent(MessageTypeSygnature.INFORM + messageTask.message);
-			// send(message);
+			send(message);
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
 		}
+		
+		//reset taska
 		messageTask = null;
 	}
 
+	//przekazanie tokena do nastêpnego agenta
 	private void rotateToken() {
 		if (nextAgentUID != null && !nextAgentUID.equals(getLocalName())) {
 			System.out.println("Rotating token to Agent: " + nextAgentUID);
@@ -191,6 +199,7 @@ public class DeviceAgent extends Agent {
 		}
 	}
 
+	//rejestracja Servisu aby mieæ dostêp do listy wszystkich agentów
 	public void register() {
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
@@ -211,9 +220,11 @@ public class DeviceAgent extends Agent {
 		sd.setType(SD_TYPE);
 		dfd.addServices(sd);
 
+		//pobranie wszystkich agentow
 		DFAgentDescription[] result = DFService.search(this, dfd);
 
 		if (result != null && result.length > 0) {
+			//sortowanie wed³ug priorytetu
 			Arrays.sort(result, new Comparator<DFAgentDescription>() {
 
 				@Override
@@ -224,9 +235,15 @@ public class DeviceAgent extends Agent {
 				}
 
 			});
-			System.out.println(result);
+			
+			for (DFAgentDescription df : result) {
+				System.out.println(df.getName().getLocalName());
+			}
+			//przypisywanie nastêpników do odpowienich agentów na podstawie priorytetów
+			//
 			for (int i = 0; i < result.length; i++) {
-				if (extractPriority(result[i].getName().getLocalName()) <= agentPriority) {
+				if (extractPriority(result[i].getName().getLocalName()) <= agentPriority || i == result.length - 1) {
+					
 
 					ACLMessage message = new ACLMessage(ACLMessage.INFORM);
 					message.setContent(MessageTypeSygnature.NEXTUID + getLocalName());
@@ -234,16 +251,19 @@ public class DeviceAgent extends Agent {
 					send(message);
 					if (i == 0) {
 						nextAgentUID = result[result.length - 1].getName().getLocalName();
+						System.out.println();
 					} else if (i - 1 < result.length) {
-						nextAgentUID = result[i + 1].getName().getLocalName();
+						nextAgentUID = result[i - 1].getName().getLocalName();
 					} else {
 						nextAgentUID = result[0].getName().getLocalName();
 					}
+					System.out.println("Next agent: " + nextAgentUID);
 					break;
 				}
 
 			}
 		} else {
+			//je¿eli to jest 1 agent w ringu ustaw token dla tego agenta
 			hasTokenFlag = true;
 		}
 
@@ -259,13 +279,15 @@ class MessageTask {
 
 	MessageTask(String content) {
 		int startMessageIndex = MessageTypeSygnature.MSGTASK.length();
-		int endMessageIndex = content.indexOf(UID_INDEX) - 2;
+		int endMessageIndex = content.indexOf(UID_INDEX) - 1;
 		int startReceiverUIDIndex = content.indexOf(UID_INDEX) + UID_INDEX.length();
 		message = content.substring(startMessageIndex, endMessageIndex);
 		receiverUID = content.substring(startReceiverUIDIndex);
 	}
 }
 
+
+//klasa do rozró¿niania typów wiadomoœci
 class MessageTypeSygnature {
 	public static final String INFORM = "#INFORM ";
 	public static final String TOKEN = "#TOKEN ";
